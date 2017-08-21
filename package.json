@@ -1,0 +1,19 @@
+{
+  "name": "rivescript-chatbot-lambda",
+  "version": "1.0.0",
+  "description": "Source codes of blog.simonho.net Messenger Chatbot",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/simonho288/rivescript-chatbot-lambda.git"
+  },
+  "author": "Simon Ho",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/simonho288/rivescript-chatbot-lambda/issues"
+  },
+  "homepage": "https://github.com/simonho288/rivescript-chatbot-lambda#readme"
+}
