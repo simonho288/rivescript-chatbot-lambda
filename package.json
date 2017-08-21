@@ -4,7 +4,7 @@
   "description": "Source codes of blog.simonho.net Messenger Chatbot",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
@@ -15,5 +15,10 @@
   "bugs": {
     "url": "https://github.com/simonho288/rivescript-chatbot-lambda/issues"
   },
-  "homepage": "https://github.com/simonho288/rivescript-chatbot-lambda#readme"
+  "homepage": "https://github.com/simonho288/rivescript-chatbot-lambda#readme",
+  "dependencies": {
+    "body-parser": "^1.17.2",
+    "express": "^4.15.4",
+    "request": "^2.81.0"
+  }
 }
