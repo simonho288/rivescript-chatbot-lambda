@@ -2,11 +2,11 @@ const request = require('request')
 
 const PAGE_ACCESS_TOKEN = 'EAAByBcEtFkIBAIzBnvNzFAS75Ij5Sad8wU5Ytm64deMZAiBejReHABgz3EFVZC9ENns5dtpiCIafJtKGunEV8UeynGXIpBcRQfPxKm2FyUEvL4vMWOOISK0EHIuoMZCNC6Kuw9ylBx8rLPLKndCpu3kSkGZBVZCh2E1tHcrGzggZDZD'
 
-function receivedMessage(event) {
-  var senderID = event.sender.id
-  var recipientID = event.recipient.id
-  var timeOfMessage = event.timestamp
-  var message = event.message
+function receivedMessage(msg) {
+  var senderID = msg.sender.id
+  var recipientID = msg.recipient.id
+  var timeOfMessage = msg.timestamp
+  var message = msg.message
 
   console.log('Received message for user %d and page %d at %d with message:', senderID, recipientID, timeOfMessage)
   console.log(JSON.stringify(message))
@@ -31,14 +31,14 @@ function receivedMessage(event) {
   }
 }
 
-function receivedPostback(event) {
-  var senderID = event.sender.id
-  var recipientID = event.recipient.id
-  var timeOfPostback = event.timestamp
+function receivedPostback(msg) {
+  var senderID = msg.sender.id
+  var recipientID = msg.recipient.id
+  var timeOfPostback = msg.timestamp
 
   // The 'payload' param is a developer-defined field which is set in a postback 
   // button for Structured Messages. 
-  var payload = event.postback.payload
+  var payload = msg.postback.payload
 
   console.log("Received postback for user %d and page %d with payload '%s' " + 
     "at %d", senderID, recipientID, payload, timeOfPostback)
@@ -129,45 +129,58 @@ function callSendAPI(messageData) {
 }
 
 // Module export object
-module.exports.fb_webhook = {
-	get(req, res) {
-		if (req.query['hub.mode'] === 'subscribe' && req.query['hub.verify_token'] === 'imsimonchatbot_vt288') {
-			console.log("Validating webhook")
-			res.status(200).send(req.query['hub.challenge'])
-		} else {
-			console.error("Failed validation. Make sure the validation tokens match.")
-			res.sendStatus(403)
-		}	
-	},
+module.exports.fb_webhook = function(event, context, callback) {
+  if (event.queryStringParameters) {
+    handleHttpGet(event.queryStringParameters, callback)
+  } else if (event.body) {
+    handleHttpPost(JSON.parse(event.body), callback)
+  }
+}
 
-	post(req, res) {
-		var data = req.body
-		
-		// Make sure this is a page subscription
-		if (data.object === 'page') {
-			// Iterate over each entry - there may be multiple if batched
-			data.entry.forEach(function(entry) {
-				var pageID = entry.id
-				var timeOfEvent = entry.time
-	
-				// Iterate over each messaging event
-				entry.messaging.forEach(function(event) {
-					if (event.message) {
-						receivedMessage(event)
-					} else if (event.postback) {
-						receivedPostback(event)
-					} else {
-						console.log("Webhook received unknown event: ", event)
-					}
-				})
-			})
-	
-			// Assume all went well.
-			//
-			// You must send back a 200, within 20 seconds, to let us know
-			// you've successfully received the callback. Otherwise, the request
-			// will time out and we will keep trying to resend.
-			res.sendStatus(200)
-		}		
-	}
+function handleHttpGet(query, callback) {
+  if (query['hub.mode'] === 'subscribe' && query['hub.verify_token'] === 'imsimonchatbot_vt288') {
+    let challenge = query['hub.challenge'];
+
+    let response = {
+      'body': parseInt(challenge),
+      'statusCode': 200
+    }
+    callback(null, response);
+  } else {
+    let response = {
+      'body': 'Error, wrong validation token',
+      'statusCode': 422
+    }
+    callback(null, response);
+  }
+}
+
+function handleHttpPost(data, callback) {		
+  // Make sure this is a page subscription
+  if (data.object === 'page') {
+    // Iterate over each entry - there may be multiple if batched
+    data.entry.forEach(function(entry) {
+      var pageID = entry.id
+      var timeOfEvent = entry.time
+
+      // Iterate over each messaging event
+      entry.messaging.forEach((msg) => {
+        if (msg.message) {
+          receivedMessage(msg)
+        } else if (msg.postback) {
+          receivedPostback(msg)
+        } else {
+          console.log("Webhook received unknown event: ", event)
+        }
+      })
+    })
+  
+    var response = {
+      'body': 'ok',
+      'statusCode': 200
+    };
+    callback(null, response);
+  } else {
+    throw new Error('Unhandle object: ' + data.object);
+  }
 }

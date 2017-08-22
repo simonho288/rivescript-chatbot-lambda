@@ -20,8 +20,6 @@ service: iamsimonchatbot
 provider:
   name: aws
   runtime: nodejs6.10
-
-# you can overwrite defaults here
   stage: prod
   region: us-east-1
 
@@ -56,7 +54,19 @@ provider:
 
 functions:
   fb_webhook:
+    name: fb_webhook
+    description: Facebook Messenger Platform webhook for my chatbot
     handler: webhookfb.fb_webhook
+    memorySize: 128
+    events:
+      - http:
+          path: fb_webhook
+          method: get
+          cors: true
+      - http:
+          path: fb_webhook
+          method: post
+          cors: true
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events

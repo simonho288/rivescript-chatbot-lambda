@@ -6,11 +6,11 @@ const webhook_fb = require('./webhookfb.js').fb_webhook
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: true}))
 
-app.get('/webhook', function(req, res) {
+app.get('/webhook_fb', function(req, res) {
   webhook_fb.get(req, res)
 })
 
-app.post('/webhook', function (req, res) {
+app.post('/webhook_fb', function (req, res) {
   webhook_fb.post(req, res)
 })
   
