@@ -6,6 +6,9 @@
   "scripts": {
     "start": "node server.js"
   },
+  "files": [
+    "rsBrainFiles/"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/simonho288/rivescript-chatbot-lambda.git"
@@ -20,6 +23,7 @@
     "aws-sdk": "^2.102.0",
     "body-parser": "^1.17.2",
     "express": "^4.15.4",
-    "request": "^2.81.0"
+    "request": "^2.81.0",
+    "rivescript": "^1.17.2"
   }
 }

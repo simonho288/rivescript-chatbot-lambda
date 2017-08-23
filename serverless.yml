@@ -21,11 +21,20 @@ provider:
   name: aws
   runtime: nodejs6.10
   stage: prod
-  region: us-east-1
+  region: ap-southeast-1
 
 # you can add statements to the Lambda function's IAM Role here
-#  iamRoleStatements:
-#    - Effect: "Allow"
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - dynamodb:DescribeTable
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:ap-southeast-1:*:*"
 #      Action:
 #        - "s3:ListBucket"
 #      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ] ]  }
@@ -53,19 +62,28 @@ provider:
 #    - exclude-me-dir/**
 
 functions:
-  fb_webhook:
-    name: fb_webhook
+  webhookfb:
+    name: webhookfb
     description: Facebook Messenger Platform webhook for I am Simon Chatbot
-    handler: webhookfb.fb_webhook
+    handler: webhookfb.handler
     memorySize: 128
     events:
       - http:
-          path: fb_webhook
+          path: webhookfb
           method: get
           cors: true
       - http:
-          path: fb_webhook
+          path: webhookfb
           method: post
+          cors: true
+  hello:
+    name: hello
+    handler: handler.hello
+    memorySize: 128
+    events:
+      - http:
+          path: hello
+          method: get
           cors: true
 
 #    The following are a few example events you can configure
@@ -97,10 +115,8 @@ functions:
 #          trigger: PreSignUp
 
 #    Define function environment variables here
-    environment:
-      AWS_ACCESS_KEY_ID: AKIAINI47NVF5QM25PYQ
-      AMAZON_SECRET_ACCESS_KEY: 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
-
+#    environment:
+#      name: value
 # you can add CloudFormation resource templates here
 #resources:
 #  Resources:

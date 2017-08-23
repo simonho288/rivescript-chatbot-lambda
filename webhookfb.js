@@ -1,12 +1,13 @@
 const request = require('request')
 const SDB = require('./simpledb.js')
+const RS = require('./rivescript.js')
 
 const PAGE_ACCESS_TOKEN = 'EAAByBcEtFkIBAIzBnvNzFAS75Ij5Sad8wU5Ytm64deMZAiBejReHABgz3EFVZC9ENns5dtpiCIafJtKGunEV8UeynGXIpBcRQfPxKm2FyUEvL4vMWOOISK0EHIuoMZCNC6Kuw9ylBx8rLPLKndCpu3kSkGZBVZCh2E1tHcrGzggZDZD'
 
 /**
  * Module export object
  */
-module.exports.fb_webhook = function(event, context, callback) {
+module.exports.handler = function(event, context, callback) {
   if (event.queryStringParameters) {
     handleHttpGet(event.queryStringParameters, callback)
   } else if (event.body) {
@@ -14,20 +15,94 @@ module.exports.fb_webhook = function(event, context, callback) {
   }
 }
 
+function handleHttpGet(query, callback) {
+  if (query['hub.mode'] === 'subscribe' && query['hub.verify_token'] === 'imsimonchatbot_vt288') {
+    let challenge = query['hub.challenge'];
+
+    let response = {
+      body: parseInt(challenge),
+      statusCode: 200
+    }
+    callback(null, response);
+  } else {
+    let response = {
+      'body': 'Error, wrong validation token',
+      'statusCode': 422
+    }
+    callback(null, response);
+  }
+}
+
+function handleHttpPost(data, callback) {		
+  // Make sure this is a page subscription
+  if (data.object === 'page') {
+    // Inititalise the RiveScript
+    RS.init().then(() => {
+      // Iterate over each entry - there may be multiple if batched
+      data.entry.forEach(function(entry) {
+        let pageID = entry.id
+        let timeOfEvent = entry.time
+
+        // Iterate over each messaging event
+        entry.messaging.forEach((msg) => {
+          if (msg.message) {
+            receivedMessage(msg)
+          } else if (msg.postback) {
+            receivedPostback(msg)
+          } else {
+            console.log("Webhook received unknown event: ", event)
+          }
+        })
+      })
+    
+      let response = {
+        'body': 'ok',
+        'statusCode': 200
+      };
+      callback(null, response);
+    })
+  } else {
+    throw new Error('Unhandle object: ' + data.object);
+  }
+}
+
 function receivedMessage(msg) {
-  var senderID = msg.sender.id
-  var recipientID = msg.recipient.id
-  var timeOfMessage = msg.timestamp
-  var message = msg.message
+  let senderID = msg.sender.id
+  let recipientID = msg.recipient.id
+  let timeOfMessage = msg.timestamp
+  let message = msg.message
 
   console.log('Received message for user %d and page %d at %d with message:', senderID, recipientID, timeOfMessage)
   console.log(JSON.stringify(message))
 
-  var messageId = message.mid
+  let messageId = message.mid
+  let messageText = message.text
+  let messageAttachments = message.attachments
 
-  var messageText = message.text
-  var messageAttachments = message.attachments
+  // Load user state from SimpleDB
+  SDB.loadUserRecord(senderID, recipientID).then((record) => {
+    // console.log('record')
+    // console.log(record)
+    let state = null
+    if (record && record.Item && record.Item.vars)
+      state = record.Item.vars
+    // Process the incoming message
+    return RS.getReply(senderID, messageText, state)
+  }).then((answer) => {
+    // Send the processed message back to sender
+    return sendTextMessage(senderID, answer)    
+  }).then(() => {
+    // Save user state
+    let userState = RS.getUserState(senderID)
+    return SDB.saveUserRecord(senderID, recipientID, userState)
+  }).then((result) => {
+    console.log('User state saved')
+  }).catch((err) => {
+    console.error(err.message)
+    sendTextMessage(senderID, 'Internal error: ' + messageText)
+  })
 
+  /*
   if (messageText) {
     // If we receive a text message, check to see if it matches a keyword
     // and send back the example. Otherwise, just echo the text we received.
@@ -41,16 +116,17 @@ function receivedMessage(msg) {
   } else if (messageAttachments) {
     sendTextMessage(senderID, "Message with attachment received")
   }
+  */
 }
 
 function receivedPostback(msg) {
-  var senderID = msg.sender.id
-  var recipientID = msg.recipient.id
-  var timeOfPostback = msg.timestamp
+  let senderID = msg.sender.id
+  let recipientID = msg.recipient.id
+  let timeOfPostback = msg.timestamp
 
   // The 'payload' param is a developer-defined field which is set in a postback 
   // button for Structured Messages. 
-  var payload = msg.postback.payload
+  let payload = msg.postback.payload
 
   console.log("Received postback for user %d and page %d with payload '%s' " + 
     "at %d", senderID, recipientID, payload, timeOfPostback)
@@ -61,7 +137,7 @@ function receivedPostback(msg) {
 }
 
 function sendGenericMessage(recipientId) {
-  var messageData = {
+  let messageData = {
     recipient: {
       id: recipientId
     },
@@ -108,7 +184,7 @@ function sendGenericMessage(recipientId) {
 }
 
 function sendTextMessage(recipientId, messageText) {
-  var messageData = {
+  let messageData = {
     recipient: {
       id: recipientId
     },
@@ -128,8 +204,8 @@ function callSendAPI(messageData) {
     json: messageData
   }, function (error, response, body) {
     if (!error && response.statusCode == 200) {
-      var recipientId = body.recipient_id
-      var messageId = body.message_id
+      let recipientId = body.recipient_id
+      let messageId = body.message_id
 
       console.log("Successfully sent generic message with id %s to recipient %s", messageId, recipientId)
     } else {
@@ -138,52 +214,4 @@ function callSendAPI(messageData) {
       console.error(error)
     }
   })
-}
-
-function handleHttpGet(query, callback) {
-  if (query['hub.mode'] === 'subscribe' && query['hub.verify_token'] === 'imsimonchatbot_vt288') {
-    let challenge = query['hub.challenge'];
-
-    let response = {
-      'body': parseInt(challenge),
-      'statusCode': 200
-    }
-    callback(null, response);
-  } else {
-    let response = {
-      'body': 'Error, wrong validation token',
-      'statusCode': 422
-    }
-    callback(null, response);
-  }
-}
-
-function handleHttpPost(data, callback) {		
-  // Make sure this is a page subscription
-  if (data.object === 'page') {
-    // Iterate over each entry - there may be multiple if batched
-    data.entry.forEach(function(entry) {
-      var pageID = entry.id
-      var timeOfEvent = entry.time
-
-      // Iterate over each messaging event
-      entry.messaging.forEach((msg) => {
-        if (msg.message) {
-          receivedMessage(msg)
-        } else if (msg.postback) {
-          receivedPostback(msg)
-        } else {
-          console.log("Webhook received unknown event: ", event)
-        }
-      })
-    })
-  
-    var response = {
-      'body': 'ok',
-      'statusCode': 200
-    };
-    callback(null, response);
-  } else {
-    throw new Error('Unhandle object: ' + data.object);
-  }
 }
