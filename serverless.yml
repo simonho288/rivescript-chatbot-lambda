@@ -97,8 +97,9 @@ functions:
 #          trigger: PreSignUp
 
 #    Define function environment variables here
-#    environment:
-#      variable2: value2
+    environment:
+      AWS_ACCESS_KEY_ID: AKIAINI47NVF5QM25PYQ
+      AMAZON_SECRET_ACCESS_KEY: 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
 
 # you can add CloudFormation resource templates here
 #resources:

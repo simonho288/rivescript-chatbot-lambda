@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/simonho288/rivescript-chatbot-lambda#readme",
   "dependencies": {
+    "aws-sdk": "^2.102.0",
     "body-parser": "^1.17.2",
     "express": "^4.15.4",
     "request": "^2.81.0"

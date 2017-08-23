@@ -1,6 +1,18 @@
 const request = require('request')
+const SDB = require('./simpledb.js')
 
 const PAGE_ACCESS_TOKEN = 'EAAByBcEtFkIBAIzBnvNzFAS75Ij5Sad8wU5Ytm64deMZAiBejReHABgz3EFVZC9ENns5dtpiCIafJtKGunEV8UeynGXIpBcRQfPxKm2FyUEvL4vMWOOISK0EHIuoMZCNC6Kuw9ylBx8rLPLKndCpu3kSkGZBVZCh2E1tHcrGzggZDZD'
+
+/**
+ * Module export object
+ */
+module.exports.fb_webhook = function(event, context, callback) {
+  if (event.queryStringParameters) {
+    handleHttpGet(event.queryStringParameters, callback)
+  } else if (event.body) {
+    handleHttpPost(JSON.parse(event.body), callback)
+  }
+}
 
 function receivedMessage(msg) {
   var senderID = msg.sender.id
@@ -126,15 +138,6 @@ function callSendAPI(messageData) {
       console.error(error)
     }
   })
-}
-
-// Module export object
-module.exports.fb_webhook = function(event, context, callback) {
-  if (event.queryStringParameters) {
-    handleHttpGet(event.queryStringParameters, callback)
-  } else if (event.body) {
-    handleHttpPost(JSON.parse(event.body), callback)
-  }
 }
 
 function handleHttpGet(query, callback) {
