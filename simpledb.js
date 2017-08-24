@@ -6,11 +6,7 @@ const path = require('path')
 const AWS = require('aws-sdk')
 
 // Create the DynamoDB service object
-AWS.config = new AWS.Config({
-  accessKeyId: 'AKIAINI47NVF5QM25PYQ',
-  secretAccessKey: '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',
-  region: 'ap-southeast-1'
-})
+AWS.config = new AWS.Config()
 
 // let ddb = new AWS.DynamoDB({apiVersion: '2012-10-08'})
 let ddb = new AWS.DynamoDB.DocumentClient()
