@@ -1,5 +1,5 @@
 /**
- * This module is for testing in local express server
+ * Local express server for local testing purpose only
  */
 
 const bodyParser = require('body-parser')

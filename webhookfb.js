@@ -1,8 +1,9 @@
 const request = require('request')
-const SDB = require('./simpledb.js')
+const SDB = require('./dynamodb.js')
 const RS = require('./rivescript.js')
 
 const PAGE_ACCESS_TOKEN = 'EAAByBcEtFkIBAIzBnvNzFAS75Ij5Sad8wU5Ytm64deMZAiBejReHABgz3EFVZC9ENns5dtpiCIafJtKGunEV8UeynGXIpBcRQfPxKm2FyUEvL4vMWOOISK0EHIuoMZCNC6Kuw9ylBx8rLPLKndCpu3kSkGZBVZCh2E1tHcrGzggZDZD'
+
 
 /**
  * Module export object
@@ -72,17 +73,15 @@ function receivedMessage(msg) {
   let timeOfMessage = msg.timestamp
   let message = msg.message
 
-  console.log('Received message for user %d and page %d at %d with message:', senderID, recipientID, timeOfMessage)
-  console.log(JSON.stringify(message))
+  console.log('Received message "%s" for user %d and page %d', message.text, senderID, recipientID)
+  // console.log(JSON.stringify(message))
 
   let messageId = message.mid
   let messageText = message.text
   let messageAttachments = message.attachments
 
-  // Load user state from SimpleDB
+  // Load user state from dynamodb
   SDB.loadUserRecord(senderID, recipientID).then((record) => {
-    // console.log('record')
-    // console.log(record)
     let state = null
     if (record && record.Item && record.Item.vars)
       state = record.Item.vars
@@ -207,7 +206,7 @@ function callSendAPI(messageData) {
       let recipientId = body.recipient_id
       let messageId = body.message_id
 
-      console.log("Successfully sent generic message with id %s to recipient %s", messageId, recipientId)
+      console.log("Successfully sent generic message to recipient %s", recipientId)
     } else {
       console.error("Unable to send message.")
       console.error(response)

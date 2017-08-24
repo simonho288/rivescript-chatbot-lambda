@@ -1,14 +1,12 @@
 /**
- * This module mainly handles AWS SimpleDB tasks
+ * This module mainly handles AWS Dynamodb tasks
  */
 
 const path = require('path')
 const AWS = require('aws-sdk')
 
 // Create the DynamoDB service object
-AWS.config = new AWS.Config()
-
-// let ddb = new AWS.DynamoDB({apiVersion: '2012-10-08'})
+AWS.config.loadFromPath(path.join(__dirname, './aws.config.json'))
 let ddb = new AWS.DynamoDB.DocumentClient()
 const DYNAMNO_TABLE = {
   USERVARS: 'rive-uservars' // To store rivescript data from getUservars()
@@ -64,61 +62,3 @@ module.exports = {
     })
   }
 }
-
-
-
-/*
-const SDB_DOMAIN = 'iamsimonchatbot' // SimpleDB domain we're using
-
-// Configure & initialise AWS SimpleDB
-aws.config = new aws.Config({
-  accessKeyId: 'AKIAINI47NVF5QM25PYQ',
-  secretAccessKey: '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'
-})
-var simpledb = new aws.SimpleDB({
-  region: 'US-East',
-  endpoint: 'https://sdb.amazonaws.com'
-})
-
-module.exports = {
-  // Add a user record to SimpleDB
-  saveUserRecord: (userId, values) => {
-    console.assert(userId)
-    console.assert(values)
-    return new Promise((resolve, reject) => {
-      let attrs = [{
-        Name: 'user_record',
-        Value: JSON.stringify(values)
-      }]
-      simpledb.putAttributes({
-        DomainName: SDB_DOMAIN,
-        ItemName: userId,
-        Attributes: attrs
-      }, (err, result) => {
-        if (err) {
-          return reject(err)
-        } else {
-          return resolve(result)
-        }
-      })
-    })
-  },
-
-  // Retrieve user record from SimpleDB
-  loadUserRecord: (userId) => {
-    console.assert(userId)
-    return new Promise((resolve, reject) => {
-      simpledb.getAttributes({
-        DomainName: SDB_DOMAIN,
-        ItemName: userId
-      }, (err, result) => {
-        if (err) {
-          return reject(err)
-        } else {
-          return resolve(result.Attributes)
-        }
-      })
-    })
-  }
-}
-*/
