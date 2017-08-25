@@ -65,7 +65,7 @@ functions:
   webhookfb:
     name: webhookfb
     description: Facebook Messenger Platform webhook for I am Simon Chatbot
-    handler: webhookfb.handler
+    handler: webhookfb.webhook
     memorySize: 128
     events:
       - http:

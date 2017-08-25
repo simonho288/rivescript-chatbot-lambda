@@ -1,0 +1,7 @@
+! version = 2.0
+
++ [*] stock price [of] *
+- stock price of <star1> is <call>getStockPrice <star1></call>
+
++ * stock price
+- <call>getStockPrice <star1></call>

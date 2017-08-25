@@ -23,6 +23,7 @@
     "aws-sdk": "^2.102.0",
     "body-parser": "^1.17.2",
     "express": "^4.15.4",
+    "lodash": "^4.17.4",
     "request": "^2.81.0",
     "rivescript": "^1.17.2"
   }

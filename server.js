@@ -5,7 +5,7 @@
 const bodyParser = require('body-parser')
 const express = require('express')
 const app = express()
-const webhook_fb = require('./webhookfb.js').handler
+const fbWebhook = require('./webhookfb.js')
 const RS = require('./rivescript.js')
 
 app.use(bodyParser.json())
@@ -13,10 +13,11 @@ app.use(bodyParser.urlencoded({extended: true}))
 
 app.get('/webhookfb', function(req, res) {
   console.log(req.query)
+  // make serverless similar event object
   let event = {
     queryStringParameters: req.query
   }
-  webhook_fb(event, null, (err, response) => {
+  fbWebhook.webhook(event, null, (err, response) => {
     if (err) {
       console.error(err)
     } else {
@@ -26,10 +27,11 @@ app.get('/webhookfb', function(req, res) {
 })
 
 app.post('/webhookfb', function(req, res) {
+  // make serverless similar event object
   let event = {
     body: JSON.stringify(req.body)
   }
-  webhook_fb(event, null, (err, response) => {
+  fbWebhook.webhook(event, null, (err, response) => {
     if (err) {
       console.error(err)
     } else {
@@ -43,7 +45,21 @@ app.get('/test_rs/:msg', (req, res) => {
   console.log('msg', msg)
 
   RS.init().then(() => {
-    return RS.getReply(msg)
+    let obj = {
+      sender: {
+        id: '1434188906628402'
+      },
+      recipient: {
+        id: '114248985967236'
+      },
+      timestamp: 114248985967236,
+      message: {
+        text: msg
+      }
+    }
+    fbWebhook.receivedMessage(obj)
+    return 'okay'
+    // return RS.getReply(msg)
   }).then((answer) => {
     res.send(answer)
   }).catch((err) => {
