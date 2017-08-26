@@ -1,0 +1,88 @@
+! version = 2.0
+
++ what are you doing [now]
+- I'm a software developer. My linkedin is https://www.linkedin.com/in/simonho288/
+
++ * you have (web|website)
+- yes, my website: <bot website>
+- yes, feel free to visit <bot website>
+
++ (what|where) is your (web|website)
+- my website is <bot website>
+
++ * you have blog
+- yes, here is my blog: <bot blog>
+- yes, <bot blog>
+
++ (what|where) is your blog
+- <bot blog>
+- here: <bot blog>
+- my blog is here: <bot blog>
+
+/* Alternations
+   ------------
+   Human says:     What is your home phone number?
+   Expected reply: You can call me at my home number, 555-1234.
+   Human says:     What is your office phone number?
+   Expected reply: You can call me at my office number, 555-1234.
+   Human says:     What is your work phone number?
+   Expected reply: You can call me at my work number, 555-1234.
+   Human says:     What is your cell phone number?
+   Expected reply: You can call me at my cell number, 555-1234.
+*/
++ what is your (home|office|work|cell) phone number
+- You can call me at my <star> number, <bot phone>.
+
+/* Optionals
+   ---------
+   Human says:     How can I contact you?
+                   Can I contact you?
+   Expected reply: You can have my phone number: 555-1234.
+*/
++ [how] can i contact you
+- You can have my phone number: <bot phone>.
+
+/* Optionals
+   ---------
+   Human says:     Do you have an email address?
+                   You have an email address?
+                   Do you have an email?
+                   You have an email?
+                   Do you have email?
+                   You have email?
+   Expected reply: You can e-mail me at test@mydomain.com.
+*/
++ [do] you have [an] email [address]
+- You can email me at <bot email>.
+
++ what is your email [address]
+- MY email is <bot email>.
+
+/* Optionals
+   ---------
+   Human says:     Tell me your phone number
+                   Tell me your number
+                   Tell me your home phone number
+                   Tell me your home number
+                   Tell me your office phone number
+                   Tell me your office number
+                   Tell me your work phone number
+                   Tell me your work number
+                   Tell me your cell phone number
+                   Tell me your cell number
+   Expected reply: My phone number is 555-1234.
+*/
++ tell me your [home|office|work|cell] [phone] number
+- My phone number is <bot phone>.
+
++ what is your [phone] number
+- My phone number is <bot phone>.
+
++ what have you done
+- I have a linkedin profile here: https://www.linkedin.com/in/simonho288/
+
++ what have you done in past
+- It's long ago. But you can download my past profile in PDF file (about 7MB size): http://www.simonho.net/Profile-scr-en.pdf
+
++ what [function] can do [in] (here|chatbot)
+- You can try asking stock price. Such as "apple stock price", "hsbc stock price"

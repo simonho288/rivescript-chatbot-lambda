@@ -12,14 +12,14 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: true}))
 
 app.get('/webhookfb', function(req, res) {
-  console.log(req.query)
   // make serverless similar event object
   let event = {
     queryStringParameters: req.query
   }
+  console.log(event) // dump the event for debugging
   fbWebhook.webhook(event, null, (err, response) => {
     if (err) {
-      console.error(err)
+      console.error('Error: ' + err.body)
     } else {
       res.end(response.body.toString())
     }

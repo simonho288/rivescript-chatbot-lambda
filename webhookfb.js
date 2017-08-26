@@ -14,10 +14,10 @@ module.exports = {
     if (event.queryStringParameters) {
       this.handleHttpGet(event.queryStringParameters)
         .then((response) => {
-          callback(reponse)
+          callback(null, response)
         })
         .catch((response) => {
-          callback(response)
+          callback(response, null)
         })
     } else if (event.body) {
       this.handleHttpPost(JSON.parse(event.body), callback)
@@ -32,12 +32,13 @@ module.exports = {
           body: parseInt(challenge),
           statusCode: 200
         }
-        return resolve(reponse)
+        return resolve(response)
       } else {
         let response = {
           'body': 'Error, wrong validation token',
           'statusCode': 422
         }
+        return reject(response)
       }
     })
   },

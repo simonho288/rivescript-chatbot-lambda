@@ -1,0 +1,16 @@
+! version = 2.0
+
+// Handle missing triggers.
+
++ *
+- lol
+- Okay..
+- So.....
+- That's interesting.
+- Go on..
+- Umm...
+- Interesting...
+- Oh, really?
+- Huh.. really?
+- {@int skeptical about bots}
+- {@ask me a question}
