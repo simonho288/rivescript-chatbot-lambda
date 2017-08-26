@@ -5,8 +5,13 @@
 const path = require('path')
 const AWS = require('aws-sdk')
 
+AWS.config = new AWS.Config({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_ACCESS_KEY_SECRET,
+  region: 'ap-southeast-1'
+})
+
 // Create the DynamoDB service object
-AWS.config.loadFromPath(path.join(__dirname, './aws.config.json'))
 let ddb = new AWS.DynamoDB.DocumentClient()
 const DYNAMNO_TABLE = {
   USERVARS: 'rive-uservars' // To store rivescript data from getUservars()
