@@ -5,6 +5,5 @@ jspm_packages
 # Serverless directories
 .serverless
 
-# AWS config file
-aws.config.json
+# Misc files
 debug.sh
