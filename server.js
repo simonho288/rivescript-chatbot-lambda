@@ -1,5 +1,5 @@
 /**
- * Local express server for local testing purpose only
+ * Local express server for local testing only
  */
 
 const bodyParser = require('body-parser')
@@ -11,6 +11,10 @@ const RS = require('./rivescript.js')
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: true}))
 
+/**
+ * Webhook to handle GET event sent by Facebook App (developers.facebook.com)
+ * when subscribing webhook 
+ */
 app.get('/webhookfb', function(req, res) {
   // make serverless similar event object
   let event = {
@@ -26,6 +30,10 @@ app.get('/webhookfb', function(req, res) {
   })
 })
 
+/**
+ * Webhook to handle POST event sent by Messenger when user
+ * input message.
+ */
 app.post('/webhookfb', function(req, res) {
   // make serverless similar event object
   let event = {
@@ -40,6 +48,10 @@ app.post('/webhookfb', function(req, res) {
   })
 })
 
+/**
+ * Directly process the message to get reply. The reply will be
+ * send to mine Messenger to see the result.
+ */
 app.get('/test_rs/:msg', (req, res) => {
   let msg = req.params.msg
   console.log('msg', msg)
@@ -59,7 +71,6 @@ app.get('/test_rs/:msg', (req, res) => {
     }
     fbWebhook.receivedMessage(obj)
     return 'okay'
-    // return RS.getReply(msg)
   }).then((answer) => {
     res.send(answer)
   }).catch((err) => {
