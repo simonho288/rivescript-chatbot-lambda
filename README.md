@@ -20,9 +20,14 @@ $ touch aws.config.json
 }
 ```
 
-Run in local server
+Run in local server environment
 ```bash
-$ node server.js
+$ npm start
+```
+
+Deploy via serverless
+```bash
+$ npm deploy
 ```
 
 You'll need to setup a HTTPS tunnel and copy the URL to Messenger webhook subscription. For full details, please refer to the Blog post mentioned above.
