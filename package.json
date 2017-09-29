@@ -4,7 +4,9 @@
   "description": "Source codes of blog.simonho.net Messenger Chatbot",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "debug": "nodemon --debug-brk server.js",
+    "deploy": "serverless deploy"
   },
   "files": [
     "rsBrainFiles/"
