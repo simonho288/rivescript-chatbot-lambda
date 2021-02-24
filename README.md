@@ -1,6 +1,6 @@
 # Chatbot in Lambda
 
-A Facebook Messenger Chatbot implements in NodeJS, hosting in AWS Lambda and using RiveScript for Natural Langugage Processing. It is full descibed in the Blog post titled [Giving Facebook Chatbot intelligence with RiveScript, NodeJS server running in AWS Lambda serverless architecture](https://blog.simonho.net/chatbot-a-i-programming-with-rivescript-server-running-nodejs-in-aws-lambda-using-serverless/).
+A Facebook Messenger Chatbot implements in NodeJS, hosting in AWS Lambda and using RiveScript for Natural Langugage Processing. It is full descibed in the Blog post titled [Giving Facebook Chatbot intelligence with RiveScript, NodeJS server running in AWS Lambda serverless architecture](https://blog.simonho.net/2017/08/giving-facebook-chatbot-intelligence.html).
 
 ## Download and install
 
